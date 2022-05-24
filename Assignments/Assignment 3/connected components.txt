@@ -1,0 +1,33 @@
+outputs = []
+names = ['Hexnut Template','Squarenut Template','Conveyor f100']
+
+fig, ax = plt.subplots(1,2,figsize=(12,6)) 
+fig2,ax2 = plt.subplots(figsize=(12,12)) 
+for i in range(3):
+    
+    (no_Labels, labels, stats, centroids) = cv.connectedComponentsWithStats(morph_images[i], 4, cv.CV_32S)
+    outputs.append((numLabels, labels, stats, centroids))
+    
+    print(">> Image Name: " + names[i]+"\n\t-> Number of conected components: "+str(no_Labels))
+    print("\t-> Statistics: ")
+    print("\tLeft  \tTop  \tWidth  \tHeight   Area\tCentroid")
+    
+    output = images[i].copy()
+       
+    for j in range(no_Labels):
+        x = stats[j, cv.CC_STAT_LEFT]
+        y = stats[j, cv.CC_STAT_TOP]
+        w = stats[j, cv.CC_STAT_WIDTH]
+        h = stats[j, cv.CC_STAT_HEIGHT]
+        area = stats[j, cv.CC_STAT_AREA]
+        (cX, cY) = centroids[j]
+        cv.rectangle(output, (x, y), (x + w, y + h), (0, 255, 0), 1)
+        cv.circle(output, (int(cX), int(cY)), 1, (0, 0, 255), 1)
+        print("\t",x,"\t",y,"\t",w,"\t",h,"\t",area,"\t(",cX,",",cY,")")
+    if i<2:
+        ax[i].imshow(cv.cvtColor(output, cv.COLOR_RGB2BGR))
+        ax[i].axis('off')  
+    else:
+        ax2.imshow(cv.cvtColor(output, cv.COLOR_RGB2BGR))
+        ax2.axis('off')
+    print("")
